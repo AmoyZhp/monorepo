@@ -1,13 +1,28 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+	reader, err := r.MultipartReader()
+	if err != nil {
+		log.Println("get multi part reader error: ", err.Error())
+		return
+	}
+	metadata, err := reader.NextPart()
+	if err != nil {
+		log.Println("get metadata part error: ", err.Error())
+		return
+	}
+	log.Println("metadata part name: ", metadata.FormName())
+	filepart, err := reader.NextPart()
+	if err != nil {
+		log.Println("get file part error: ", err.Error())
+		return
+	}
+	log.Println("file part name: ", filepart.FormName())
 }
 
 func main() {
