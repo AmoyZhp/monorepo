@@ -6,6 +6,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"os"
 )
 
 // MetaData http meta-data form 携带的元数据
@@ -32,27 +33,49 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("file part name: ", filepart.FormName())
+	readFile(filepart)
 	w.Write([]byte("request successfule"))
 }
 
 func readMetaData(part *multipart.Part) {
-	dataCache := make([]byte, 100)
+	dataCache := make([]byte, 1024)
 	n, err := part.Read(dataCache)
 	if err != nil && err != io.EOF {
-		log.Println("read meta data faile. ", err.Error())
+		log.Println("read meta data error. ", err.Error())
 		return
 	}
 	data := &MetaData{}
 	err = json.Unmarshal(dataCache[:n], data)
 	if err != nil {
-		log.Println("json unmarshal faile. ", err.Error())
+		log.Println("json unmarshal error. ", err.Error())
 		return
 	}
 	log.Printf("read meta data %+v", data)
 }
 
 func readFile(part *multipart.Part) {
-
+	f, err := os.Create("temp.png")
+	if err != nil {
+		log.Println("create file error. ", err.Error())
+		return
+	}
+	buf := make([]byte, 1024)
+	for {
+		n, err := part.Read(buf)
+		if err != nil && err != io.EOF {
+			log.Println("read file data error. ", err.Error())
+			return
+		}
+		if err == io.EOF || n == 0 {
+			break
+		}
+		_, err = f.Write(buf[:n])
+		if err != nil {
+			log.Println("write file error. ", err.Error())
+			return
+		}
+	}
+	log.Println("write file success. ")
 }
 
 func main() {
