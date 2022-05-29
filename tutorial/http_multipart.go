@@ -1,0 +1,4 @@
+package tutorial
+
+func main() {
+}
