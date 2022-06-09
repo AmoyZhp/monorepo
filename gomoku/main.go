@@ -7,13 +7,6 @@ import (
 	"net/http"
 )
 
-// Move chess act
-type Move struct {
-	Row    int `json:"row"`
-	Col    int `json:"col"`
-	Player int `json:"player"`
-}
-
 // Handler http handler
 type Handler struct {
 	engine Engine
