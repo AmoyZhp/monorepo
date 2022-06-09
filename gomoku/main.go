@@ -7,41 +7,39 @@ import (
 	"net/http"
 )
 
-// Move 行动
+// Move chess act
 type Move struct {
 	Row    int `json:"row"`
 	Col    int `json:"col"`
 	Player int `json:"player"`
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+// Handler http handler
+type Handler struct {
+	engine Engine
+}
+
+func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
 	bodyByte, err := io.ReadAll(r.Body)
 	if err != nil {
-		// TODO
+		log.Println("read body error: ", err.Error())
 		return
 	}
-	move := &Move{}
-	err = json.Unmarshal(bodyByte, move)
+	move := Move{}
+	err = json.Unmarshal(bodyByte, &move)
 	if err != nil {
-		// TODO
+		log.Println("json unmarshal error: ", err.Error())
 		return
 	}
-	log.Println("move: ", move)
-	retMove := &Move{
-		Col:    move.Col + 1,
-		Row:    move.Row + 1,
-		Player: move.Player + 1,
-	}
-	retByte, err := json.Marshal(retMove)
-	if err != nil {
-		// TODO
-		return
-	}
+	retMove := imp.engine.Predict(move)
+	retByte, _ := json.Marshal(retMove)
+	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Content-Type", "application/json")
 	w.Write(retByte)
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	handler := Handler{engine: newEngine()}
+	http.HandleFunc("/get-move", handler.handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
