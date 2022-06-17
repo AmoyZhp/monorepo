@@ -5,11 +5,12 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"zamrepo/gomoku/executor"
 )
 
 // Handler http handler
 type Handler struct {
-	engine Engine
+	executor executor.Executor
 }
 
 func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
@@ -18,13 +19,13 @@ func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
 		log.Println("read body error: ", err.Error())
 		return
 	}
-	move := Move{}
+	move := executor.Move{}
 	err = json.Unmarshal(bodyByte, &move)
 	if err != nil {
 		log.Println("json unmarshal error: ", err.Error())
 		return
 	}
-	retMove := imp.engine.Predict(move)
+	retMove := imp.executor.GetNextMove(move)
 	retByte, _ := json.Marshal(retMove)
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Content-Type", "application/json")
@@ -32,7 +33,7 @@ func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	handler := Handler{engine: newEngine()}
+	handler := Handler{executor: executor.NewGomokuExectuor()}
 	http.HandleFunc("/get-move", handler.handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
