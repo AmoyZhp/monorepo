@@ -8,6 +8,7 @@ type Board interface {
 	GetPlayerAtPos(x, y int) (Player, error)
 	Regret(step int) error
 	Reset() error
+	IsEnd() bool
 }
 
 // GomokuBoard chessboard
@@ -36,6 +37,12 @@ func (imp *GomokuBoard) Regret(n int) error {
 func (imp *GomokuBoard) Reset() error {
 	// TODO imp rest.
 	return nil
+}
+
+// IsEnd the game is over or not
+func (imp *GomokuBoard) IsEnd() bool {
+	// TODO imp IsEnd
+	return false
 }
 
 // GetPlayerAtPos get player at specific position

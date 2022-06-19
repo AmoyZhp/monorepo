@@ -10,6 +10,13 @@ const (
 	WHITE Player = 2
 )
 
+func nextPlayer(player Player) Player {
+	if player == WHITE {
+		return BLACK
+	}
+	return WHITE
+}
+
 // Move chess act
 type Move struct {
 	Col    int    `json:"col"`
