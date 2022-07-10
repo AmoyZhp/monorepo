@@ -2,6 +2,7 @@ package executor
 
 import (
 	"fmt"
+	"math"
 )
 
 // Engine algorithm engine
@@ -14,15 +15,21 @@ type Evaluator interface {
 	Evaluate(Board) int
 }
 
+// TreeSearchEngineConfig engine config
+type TreeSearchEngineConfig struct {
+	searchDepth int
+}
+
 // TreeSearchEngine implement tree serch engine
 type TreeSearchEngine struct {
 	board     Board
 	evaluator Evaluator
+	conf      TreeSearchEngineConfig
 }
 
 // Predict get next move
 func (imp *TreeSearchEngine) Predict(move Move) (*Move, error) {
-	// TODO implement predict logic
+	// to set opponet move
 	err := imp.board.Set(move)
 	if err != nil {
 		return nil, fmt.Errorf("")
@@ -32,8 +39,26 @@ func (imp *TreeSearchEngine) Predict(move Move) (*Move, error) {
 
 // search search next move
 func (imp *TreeSearchEngine) search(board Board, player Player) (*Move, error) {
-	// TODO imp search
-	return nil, fmt.Errorf("")
+	alpha := math.MinInt
+	beta := math.MaxInt
+	depth := imp.conf.searchDepth
+	moves := imp.findBestMoves(board, player)
+	if len(moves) == 0 {
+		return nil, fmt.Errorf("can not find candidate moves")
+	}
+	var bestMoves *Move
+	for _, m := range moves {
+		board.Set(m)
+		eval := imp.minmax(board, player, nextPlayer(player), depth-1, alpha, beta)
+		board.Regret(1)
+		if eval > alpha {
+			alpha = eval
+			bestMoves = &m
+		}
+	}
+	// bestMoves will not be nil
+	// beacuse the first moves value certainly greater than alpha, bestMoves will be sat
+	return bestMoves, nil
 }
 
 func (imp *TreeSearchEngine) minmax(
