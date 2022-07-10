@@ -2,7 +2,6 @@ package executor
 
 import (
 	"fmt"
-	"math"
 )
 
 // Engine algorithm engine
@@ -37,33 +36,42 @@ func (imp *TreeSearchEngine) search(board Board, player Player) (*Move, error) {
 	return nil, fmt.Errorf("")
 }
 
-func (imp *TreeSearchEngine) minmax(board Board, masterPlayer Player, actingPlayer Player, depth int) int {
+func (imp *TreeSearchEngine) minmax(
+	board Board,
+	masterPlayer, actingPlayer Player,
+	depth, alpha, beta int,
+) int {
 	if depth == 0 || board.IsEnd() {
 		return imp.evaluator.Evaluate(board)
 	}
 	if masterPlayer == actingPlayer {
-		// MAX
-		alpha := math.MinInt
+		// MAX Level
 		moves := imp.findBestMoves(board, actingPlayer)
 		for _, m := range moves {
 			board.Set(m)
-			eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1)
+			eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
 			if eval > alpha {
 				alpha = eval
 			}
 			board.Regret(1)
+			if alpha > beta {
+				break
+			}
 		}
 		return alpha
 	}
-	beta := math.MaxInt
+	// MIN Level
 	moves := imp.findBestMoves(board, actingPlayer)
 	for _, m := range moves {
 		board.Set(m)
-		eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1)
+		eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
 		if eval < beta {
 			beta = eval
 		}
 		board.Regret(1)
+		if alpha > beta {
+			break
+		}
 	}
 	return beta
 }
