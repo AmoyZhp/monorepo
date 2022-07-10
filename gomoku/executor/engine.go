@@ -44,36 +44,42 @@ func (imp *TreeSearchEngine) minmax(
 	if depth == 0 || board.IsEnd() {
 		return imp.evaluator.Evaluate(board)
 	}
-	if masterPlayer == actingPlayer {
-		// MAX Level
-		moves := imp.findBestMoves(board, actingPlayer)
-		for _, m := range moves {
-			board.Set(m)
-			eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
-			if eval > alpha {
-				alpha = eval
-			}
-			board.Regret(1)
-			if alpha > beta {
-				break
-			}
-		}
-		return alpha
-	}
-	// MIN Level
 	moves := imp.findBestMoves(board, actingPlayer)
 	for _, m := range moves {
 		board.Set(m)
 		eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
-		if eval < beta {
-			beta = eval
-		}
 		board.Regret(1)
+		alpha, beta = upadteAlphaBeta(masterPlayer, actingPlayer, eval, alpha, beta)
 		if alpha > beta {
 			break
 		}
 	}
+	if isMaxLevel(masterPlayer, actingPlayer) {
+		return alpha
+	}
 	return beta
+}
+func isMaxLevel(masterPlayer, actingPlayer Player) bool {
+	if masterPlayer == actingPlayer {
+		return true
+	}
+	return false
+}
+
+func upadteAlphaBeta(
+	masterPlayer, actingPlayer Player,
+	eval, alpha, beta int,
+) (int, int) {
+	if isMaxLevel(masterPlayer, actingPlayer) {
+		if eval > alpha {
+			alpha = eval
+		}
+	} else {
+		if eval < beta {
+			beta = eval
+		}
+	}
+	return alpha, beta
 }
 
 func (imp *TreeSearchEngine) findBestMoves(board Board, actingPlayer Player) []Move {
