@@ -49,7 +49,7 @@ func (imp *TreeSearchEngine) search(board Board, player Player) (*Move, error) {
 	var bestMoves *Move
 	for _, m := range moves {
 		board.Set(m)
-		eval := imp.minmax(board, player, nextPlayer(player), depth-1, alpha, beta)
+		eval := imp.alphaBetaPruning(board, player, nextPlayer(player), depth-1, alpha, beta)
 		board.Regret(1)
 		if eval > alpha {
 			alpha = eval
@@ -61,7 +61,7 @@ func (imp *TreeSearchEngine) search(board Board, player Player) (*Move, error) {
 	return bestMoves, nil
 }
 
-func (imp *TreeSearchEngine) minmax(
+func (imp *TreeSearchEngine) alphaBetaPruning(
 	board Board,
 	masterPlayer, actingPlayer Player,
 	depth, alpha, beta int,
@@ -72,7 +72,7 @@ func (imp *TreeSearchEngine) minmax(
 	moves := imp.findBestMoves(board, actingPlayer)
 	for _, m := range moves {
 		board.Set(m)
-		eval := imp.minmax(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
+		eval := imp.alphaBetaPruning(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
 		board.Regret(1)
 		alpha, beta = upadteAlphaBeta(masterPlayer, actingPlayer, eval, alpha, beta)
 		if alpha > beta {
