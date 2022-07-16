@@ -1,6 +1,8 @@
 package executor
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Board chessboard
 type Board interface {
@@ -9,6 +11,30 @@ type Board interface {
 	Regret(step int) error
 	Reset() error
 	IsEnd() bool
+}
+
+// Gomoku related attribute
+const (
+	GomokuCol = 15
+	GomokuRow = 15
+)
+
+// NewGomokuBoard new gomoku chess board
+func NewGomokuBoard() Board {
+	borad := make([][]Player, GomokuRow)
+	for i := 0; i < GomokuRow; i++ {
+		borad[i] = make([]Player, GomokuCol)
+	}
+	historyMove := make([]Move, GomokuCol*GomokuRow)
+	gomokuBoard := &GomokuBoard{
+		board:       borad,
+		historyMove: historyMove,
+		maxCol:      GomokuCol,
+		maxRow:      GomokuRow,
+		timeline:    0,
+	}
+	gomokuBoard.Reset()
+	return gomokuBoard
 }
 
 // GomokuBoard chessboard
@@ -22,7 +48,20 @@ type GomokuBoard struct {
 
 // Set set chess on board
 func (imp *GomokuBoard) Set(move Move) error {
-	// TODO imp set
+	if move.Player != BLACK && move.Player != WHITE {
+		return fmt.Errorf("playe is invalid. get player: %d", move.Player)
+	}
+	if move.Col < 0 || move.Col > imp.maxCol {
+		return fmt.Errorf("column position is invalid. get column: %d", move.Col)
+	}
+	if move.Row < 0 || move.Row > imp.maxRow {
+		return fmt.Errorf("row position is invalid. get row: %d", move.Row)
+	}
+	if imp.board[move.Row][move.Col] != EMPTY {
+		return fmt.Errorf("(%d, %d) already taken by player %d", move.Row, move.Col, imp.board[move.Row][move.Col])
+	}
+
+	imp.board[move.Row][move.Col] = move.Player
 
 	return nil
 }
@@ -40,7 +79,7 @@ func (imp *GomokuBoard) Reset() error {
 			imp.board[i][j] = EMPTY
 		}
 	}
-	imp.historyMove = []Move{}
+	imp.historyMove = make([]Move, imp.maxCol*imp.maxRow)
 	imp.timeline = 0
 	return nil
 }
@@ -52,6 +91,7 @@ func (imp *GomokuBoard) IsEnd() bool {
 }
 
 // GetPlayerAtPos get player at specific position
-func GetPlayerAtPos(x, y int) (Player, error) {
+func (imp *GomokuBoard) GetPlayerAtPos(x, y int) (Player, error) {
+	// TODO
 	return EMPTY, fmt.Errorf("")
 }
