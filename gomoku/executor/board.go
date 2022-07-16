@@ -35,7 +35,13 @@ func (imp *GomokuBoard) Regret(n int) error {
 
 // Reset reset borad
 func (imp *GomokuBoard) Reset() error {
-	// TODO imp rest.
+	for i := 0; i < imp.maxCol; i++ {
+		for j := 0; j < imp.maxRow; j++ {
+			imp.board[i][j] = EMPTY
+		}
+	}
+	imp.historyMove = []Move{}
+	imp.timeline = 0
 	return nil
 }
 
