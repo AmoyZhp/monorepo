@@ -91,7 +91,13 @@ func (imp *GomokuBoard) IsEnd() bool {
 }
 
 // GetPlayerAtPos get player at specific position
-func (imp *GomokuBoard) GetPlayerAtPos(x, y int) (Player, error) {
-	// TODO
-	return EMPTY, fmt.Errorf("")
+func (imp *GomokuBoard) GetPlayerAtPos(row, col int) (Player, error) {
+	if col < 0 || col > imp.maxCol {
+		return EMPTY, fmt.Errorf("column position is invalid. get column: %d", col)
+	}
+	if row < 0 || row > imp.maxRow {
+		return EMPTY, fmt.Errorf("row position is invalid. get row: %d", row)
+	}
+
+	return imp.board[row][col], nil
 }
