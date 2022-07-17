@@ -32,6 +32,7 @@ func NewGomokuBoard() Board {
 		maxCol:      GomokuCol,
 		maxRow:      GomokuRow,
 		timeline:    0,
+		endTime:     GomokuCol * GomokuRow,
 	}
 	gomokuBoard.Reset()
 	return gomokuBoard
@@ -42,6 +43,7 @@ type GomokuBoard struct {
 	board       [][]Player
 	historyMove []Move
 	timeline    int
+	endTime     int
 	maxCol      int
 	maxRow      int
 }
@@ -86,7 +88,9 @@ func (imp *GomokuBoard) Reset() error {
 
 // IsEnd the game is over or not
 func (imp *GomokuBoard) IsEnd() bool {
-	// TODO imp IsEnd
+	if imp.timeline == imp.endTime {
+		return true
+	}
 	return false
 }
 

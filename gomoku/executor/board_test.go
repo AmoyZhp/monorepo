@@ -137,3 +137,23 @@ func TestGomokuBoard_GetPlayerAtPos(t *testing.T) {
 		}
 	})
 }
+
+func TestGomokuBoard_IsEnd(t *testing.T) {
+	Convey("TestGomokuBoard_IsEnd", t, func() {
+		Convey("not end", func() {
+			board := NewGomokuBoard()
+			So(board.IsEnd(), ShouldBeFalse)
+		})
+		Convey("end", func() {
+			board := NewGomokuBoard()
+			player := BLACK
+			for i := 0; i < GomokuRow; i++ {
+				for j := 0; j < GomokuCol; j++ {
+					board.Set(Move{i, j, player})
+					player = nextPlayer(player)
+				}
+			}
+			So(board.IsEnd(), ShouldBeTrue)
+		})
+	})
+}
