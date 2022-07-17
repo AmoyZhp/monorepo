@@ -157,3 +157,44 @@ func TestGomokuBoard_IsEnd(t *testing.T) {
 		})
 	})
 }
+
+func TestGomokuBoard_validCoordinate(t *testing.T) {
+	Convey("TestGomokuBoard_validCoordinate", t, func() {
+		type args struct {
+			row int
+			col int
+		}
+		tests := []struct {
+			name    string
+			args    args
+			wantErr bool
+		}{
+			{
+				"valid",
+				args{7, 7},
+				false,
+			},
+			{
+				"invalid row",
+				args{
+					19, 7,
+				},
+				true,
+			},
+			{
+				"invalid col",
+				args{
+					7, 19,
+				},
+				true,
+			},
+		}
+		for _, tt := range tests {
+			Convey(tt.name, func() {
+				imp := newGomokuBoard()
+				err := imp.validCoordinate(tt.args.row, tt.args.col)
+				So(err != nil, ShouldEqual, tt.wantErr)
+			})
+		}
+	})
+}

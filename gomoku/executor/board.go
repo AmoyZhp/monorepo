@@ -19,8 +19,38 @@ const (
 	GomokuRow = 15
 )
 
+type direction []int
+
+// Row return row axis direction
+func (imp direction) Row() int {
+	return imp[0]
+}
+
+// Col return column axis direction
+func (imp direction) Col() int {
+	return imp[1]
+}
+
+var (
+	northToSouth         = direction{1, 0}
+	westToEast           = direction{0, 1}
+	northWestToSouthEast = direction{1, 1}
+	northEastToSouthWest = direction{1, -1}
+)
+
+var directions = []direction{
+	northToSouth,
+	westToEast,
+	northWestToSouthEast,
+	northEastToSouthWest,
+}
+
 // NewGomokuBoard new gomoku chess board
 func NewGomokuBoard() Board {
+	return newGomokuBoard()
+}
+
+func newGomokuBoard() *GomokuBoard {
 	borad := make([][]Player, GomokuRow)
 	for i := 0; i < GomokuRow; i++ {
 		borad[i] = make([]Player, GomokuCol)
@@ -46,18 +76,16 @@ type GomokuBoard struct {
 	endTime     int
 	maxCol      int
 	maxRow      int
+	roardBoard  [][]int // (player, road number)
 }
 
 // Set set chess on board
 func (imp *GomokuBoard) Set(move Move) error {
+	if err := imp.validCoordinate(move.Row, move.Col); err != nil {
+		return err
+	}
 	if move.Player != BLACK && move.Player != WHITE {
-		return fmt.Errorf("playe is invalid. get player: %d", move.Player)
-	}
-	if move.Col < 0 || move.Col > imp.maxCol {
-		return fmt.Errorf("column position is invalid. get column: %d", move.Col)
-	}
-	if move.Row < 0 || move.Row > imp.maxRow {
-		return fmt.Errorf("row position is invalid. get row: %d", move.Row)
+		return fmt.Errorf("player is invalid. get player: %d", move.Player)
 	}
 	if imp.board[move.Row][move.Col] != EMPTY {
 		return fmt.Errorf("(%d, %d) already taken by player %d", move.Row, move.Col, imp.board[move.Row][move.Col])
@@ -97,12 +125,47 @@ func (imp *GomokuBoard) IsEnd() bool {
 
 // GetPlayerAtPos get player at specific position
 func (imp *GomokuBoard) GetPlayerAtPos(row, col int) (Player, error) {
+	if err := imp.validCoordinate(row, col); err != nil {
+		return EMPTY, err
+	}
+	return imp.board[row][col], nil
+}
+
+func (imp *GomokuBoard) validCoordinate(row, col int) error {
 	if col < 0 || col > imp.maxCol {
-		return EMPTY, fmt.Errorf("column position is invalid. get column: %d", col)
+		return fmt.Errorf("column position is invalid. get column: %d", col)
 	}
 	if row < 0 || row > imp.maxRow {
-		return EMPTY, fmt.Errorf("row position is invalid. get row: %d", row)
+		return fmt.Errorf("row position is invalid. get row: %d", row)
 	}
+	return nil
+}
 
-	return imp.board[row][col], nil
+func (imp *GomokuBoard) countNewRoad(move Move) []int {
+	roadCount := make([]int, 6)
+	for _, d := range directions {
+		startRow := move.Row - 4*d.Row()
+		startCol := move.Col - 4*d.Col()
+		for i := 0; i < 5; i++ {
+			roadNum := imp.computeRoadNum(startRow+i*d.Row(), startCol+i*d.Col(), move.Player, d)
+			roadCount[roadNum]++
+		}
+	}
+	return roadCount
+}
+
+func (imp *GomokuBoard) computeRoadNum(startRow, startCol int, player Player, d direction) int {
+	playerCnt := 0
+	for i := 0; i < 5; i++ {
+		row := startRow + i*d.Row()
+		col := startCol + i*d.Col()
+		if imp.validCoordinate(row, col) != nil ||
+			imp.board[row][col] == nextPlayer(player) {
+			return 0
+		}
+		if imp.board[row][col] == player {
+			playerCnt++
+		}
+	}
+	return playerCnt
 }
