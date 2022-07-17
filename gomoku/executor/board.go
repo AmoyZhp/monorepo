@@ -64,6 +64,7 @@ func (imp *GomokuBoard) Set(move Move) error {
 	}
 
 	imp.board[move.Row][move.Col] = move.Player
+	imp.timeline++
 
 	return nil
 }
