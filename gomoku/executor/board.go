@@ -12,6 +12,12 @@ type Board interface {
 	Reset() error
 	IsEnd() bool
 	Eval() int
+	GetPosInFour(Player) []Move
+	GetPosInLiveThree(Player) []Move
+	GetPosInThree(Player) []Move
+	GetPosInTwo(Player) []Move
+	GetPosInOne(Player) []Move
+	GetOpenForm(Player) []Move
 }
 
 // Gomoku related attribute
@@ -174,4 +180,34 @@ func (imp *GomokuBoard) computeRoadNum(startRow, startCol int, player Player, d 
 		}
 	}
 	return playerCnt
+}
+
+// GetPosInFour get moves in four road
+func (imp *GomokuBoard) GetPosInFour(_ Player) []Move {
+	panic("not implemented") // TODO: Implement
+}
+
+// GetPosInLiveThree get moves in live three
+func (imp *GomokuBoard) GetPosInLiveThree(_ Player) []Move {
+	panic("not implemented") // TODO: Implement
+}
+
+// GetPosInThree get moves in three road
+func (imp *GomokuBoard) GetPosInThree(_ Player) []Move {
+	panic("not implemented") // TODO: Implement
+}
+
+// GetPosInTwo get moves in two road
+func (imp *GomokuBoard) GetPosInTwo(_ Player) []Move {
+	panic("not implemented") // TODO: Implement
+}
+
+// GetPosInOne get moves in one road
+func (imp *GomokuBoard) GetPosInOne(_ Player) []Move {
+	panic("not implemented") // TODO: Implement
+}
+
+// GetOpenForm get open form
+func (imp *GomokuBoard) GetOpenForm(_ Player) []Move {
+	panic("not implemented") // TODO: Implement
 }

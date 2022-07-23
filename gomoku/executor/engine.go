@@ -122,12 +122,12 @@ func (imp *TreeSearchEngine) findBestMoves(board Board, actingPlayer Player) []M
 		return moves
 	}
 	moves = make([]Move, 0)
-	moves = append(moves, board.GetPosInThree(actingPlayer))
-	moves = append(moves, board.GetPosInThree(nextPlayer(actingPlayer)))
-	moves = append(moves, board.GetPosInTwo(actingPlayer))
-	moves = append(moves, board.GetPosInTwo(nextPlayer(actingPlayer)))
-	moves = append(moves, board.GetPosInOne(actingPlayer))
-	moves = append(moves, board.GetPosInOne(nextPlayer(actingPlayer)))
+	moves = append(moves, board.GetPosInThree(actingPlayer)...)
+	moves = append(moves, board.GetPosInThree(nextPlayer(actingPlayer))...)
+	moves = append(moves, board.GetPosInTwo(actingPlayer)...)
+	moves = append(moves, board.GetPosInTwo(nextPlayer(actingPlayer))...)
+	moves = append(moves, board.GetPosInOne(actingPlayer)...)
+	moves = append(moves, board.GetPosInOne(nextPlayer(actingPlayer))...)
 	if moves != nil {
 		return moves
 	}
