@@ -83,7 +83,7 @@ type GomokuBoard struct {
 	endTime     int
 	maxCol      int
 	maxRow      int
-	roardBoard  [][]int // (player, road number)
+	roardBoard  RoadBoard
 }
 
 // Set set chess on board
@@ -99,8 +99,11 @@ func (imp *GomokuBoard) Set(move Move) error {
 	}
 
 	imp.board[move.Row][move.Col] = move.Player
+	err := imp.roardBoard.Set(move)
+	if err != nil {
+		fmt.Println("roadboard update error: ", err.Error())
+	}
 	imp.timeline++
-
 	return nil
 }
 
@@ -183,28 +186,28 @@ func (imp *GomokuBoard) computeRoadNum(startRow, startCol int, player Player, d 
 }
 
 // GetPosInFour get moves in four road
-func (imp *GomokuBoard) GetPosInFour(_ Player) []Move {
-	panic("not implemented") // TODO: Implement
+func (imp *GomokuBoard) GetPosInFour(player Player) []Move {
+	return imp.roardBoard.GetPosInFour(player)
 }
 
 // GetPosInLiveThree get moves in live three
-func (imp *GomokuBoard) GetPosInLiveThree(_ Player) []Move {
-	panic("not implemented") // TODO: Implement
+func (imp *GomokuBoard) GetPosInLiveThree(player Player) []Move {
+	return imp.roardBoard.GetPosInLiveThree(player)
 }
 
 // GetPosInThree get moves in three road
-func (imp *GomokuBoard) GetPosInThree(_ Player) []Move {
-	panic("not implemented") // TODO: Implement
+func (imp *GomokuBoard) GetPosInThree(player Player) []Move {
+	return imp.roardBoard.GetPosInThree(player)
 }
 
 // GetPosInTwo get moves in two road
-func (imp *GomokuBoard) GetPosInTwo(_ Player) []Move {
-	panic("not implemented") // TODO: Implement
+func (imp *GomokuBoard) GetPosInTwo(player Player) []Move {
+	return imp.roardBoard.GetPosInTwo(player)
 }
 
 // GetPosInOne get moves in one road
-func (imp *GomokuBoard) GetPosInOne(_ Player) []Move {
-	panic("not implemented") // TODO: Implement
+func (imp *GomokuBoard) GetPosInOne(player Player) []Move {
+	return imp.roardBoard.GetPosInOne(player)
 }
 
 // GetOpenForm get open form
