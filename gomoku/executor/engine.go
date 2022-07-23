@@ -3,6 +3,7 @@ package executor
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 // Engine algorithm engine
@@ -17,7 +18,8 @@ type Evaluator interface {
 
 // TreeSearchEngineConfig engine config
 type TreeSearchEngineConfig struct {
-	searchDepth int
+	searchDepth      int
+	maxCandaitesMove int
 }
 
 // TreeSearchEngine implement tree serch engine
@@ -42,7 +44,7 @@ func (imp *TreeSearchEngine) search(board Board, player Player) (*Move, error) {
 	alpha := math.MinInt
 	beta := math.MaxInt
 	depth := imp.conf.searchDepth
-	moves := imp.findBestMoves(board, player)
+	moves := imp.getCandidatesMoves(board, player)
 	if len(moves) == 0 {
 		return nil, fmt.Errorf("can not find candidate moves")
 	}
@@ -69,7 +71,7 @@ func (imp *TreeSearchEngine) alphaBetaPruning(
 	if depth == 0 || board.IsEnd() {
 		return imp.board.Eval()
 	}
-	moves := imp.findBestMoves(board, actingPlayer)
+	moves := imp.getCandidatesMoves(board, actingPlayer)
 	for _, m := range moves {
 		board.Set(m)
 		eval := imp.alphaBetaPruning(board, masterPlayer, nextPlayer(actingPlayer), depth-1, alpha, beta)
@@ -107,7 +109,7 @@ func upadteAlphaBeta(
 	return alpha, beta
 }
 
-func (imp *TreeSearchEngine) findBestMoves(board Board, actingPlayer Player) []Move {
+func (imp *TreeSearchEngine) getCandidatesMoves(board Board, actingPlayer Player) []Move {
 	var moves []Move
 	if moves = board.GetPosInFour(actingPlayer); moves != nil {
 		return moves
@@ -130,6 +132,10 @@ func (imp *TreeSearchEngine) findBestMoves(board Board, actingPlayer Player) []M
 	moves = append(moves, board.GetPosInOne(nextPlayer(actingPlayer))...)
 	if moves != nil {
 		return moves
+	}
+	if len(moves) > imp.conf.maxCandaitesMove {
+		rand.Shuffle(len(moves), func(i, j int) { moves[i], moves[j] = moves[j], moves[i] })
+		moves = moves[:imp.conf.maxCandaitesMove]
 	}
 	moves = board.GetOpenForm(actingPlayer)
 	return moves
