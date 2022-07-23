@@ -11,6 +11,7 @@ type Board interface {
 	Regret(step int) error
 	Reset() error
 	IsEnd() bool
+	Eval() int
 }
 
 // Gomoku related attribute
@@ -129,6 +130,11 @@ func (imp *GomokuBoard) GetPlayerAtPos(row, col int) (Player, error) {
 		return EMPTY, err
 	}
 	return imp.board[row][col], nil
+}
+
+// Eval evalutate the borad status
+func (imp *GomokuBoard) Eval() int {
+	return -1
 }
 
 func (imp *GomokuBoard) validCoordinate(row, col int) error {

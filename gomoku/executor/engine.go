@@ -67,7 +67,7 @@ func (imp *TreeSearchEngine) alphaBetaPruning(
 	depth, alpha, beta int,
 ) int {
 	if depth == 0 || board.IsEnd() {
-		return imp.evaluator.Evaluate(board)
+		return imp.board.Eval()
 	}
 	moves := imp.findBestMoves(board, actingPlayer)
 	for _, m := range moves {
