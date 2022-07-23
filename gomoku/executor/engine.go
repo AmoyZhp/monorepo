@@ -108,8 +108,31 @@ func upadteAlphaBeta(
 }
 
 func (imp *TreeSearchEngine) findBestMoves(board Board, actingPlayer Player) []Move {
-	// TODO imp find best moves
-	return nil
+	var moves []Move
+	if moves = board.GetPosInFour(actingPlayer); moves != nil {
+		return moves
+	}
+	if moves = board.GetPosInFour(nextPlayer(actingPlayer)); moves != nil {
+		return moves
+	}
+	if moves = board.GetPosInLiveThree(actingPlayer); moves != nil {
+		return moves
+	}
+	if moves = board.GetPosInLiveThree(nextPlayer(actingPlayer)); moves != nil {
+		return moves
+	}
+	moves = make([]Move, 0)
+	moves = append(moves, board.GetPosInThree(actingPlayer))
+	moves = append(moves, board.GetPosInThree(nextPlayer(actingPlayer)))
+	moves = append(moves, board.GetPosInTwo(actingPlayer))
+	moves = append(moves, board.GetPosInTwo(nextPlayer(actingPlayer)))
+	moves = append(moves, board.GetPosInOne(actingPlayer))
+	moves = append(moves, board.GetPosInOne(nextPlayer(actingPlayer)))
+	if moves != nil {
+		return moves
+	}
+	moves = board.GetOpenForm(actingPlayer)
+	return moves
 }
 
 func newEngine() Engine {
