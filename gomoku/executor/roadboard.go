@@ -2,12 +2,38 @@ package executor
 
 // RoadBoard board to store roads
 type RoadBoard struct {
+	roadsPool      [][]Road
 	roads          map[Player][][]Road
 	liveThreeRoads map[Player][]Road
 }
 
 // Road road is continuous five position in specific direction
 type Road struct {
+}
+
+// NewRoadBoard new road board
+func NewRoadBoard() RoadBoard {
+
+	roadsPool := newRoadsPool()
+	roads := newRoads(roadsPool)
+	liveThreeRoads := newLiveThreeRoads(roads)
+	return RoadBoard{
+		roadsPool:      roadsPool,
+		roads:          roads,
+		liveThreeRoads: liveThreeRoads,
+	}
+}
+
+func newRoadsPool() [][]Road {
+	panic("unimplement")
+}
+
+func newRoads(roadsPool [][]Road) map[Player][][]Road {
+	panic("unimplement")
+}
+
+func newLiveThreeRoads(map[Player][][]Road) map[Player][]Road {
+	panic("unimplement")
 }
 
 func (imp *Road) getEmptyPos() []Move {
