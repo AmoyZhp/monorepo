@@ -4,6 +4,12 @@ import (
 	"fmt"
 )
 
+// Pos coordinate of chess board
+type Pos struct {
+	Row int
+	Col int
+}
+
 // Board chessboard
 type Board interface {
 	Set(Move) error

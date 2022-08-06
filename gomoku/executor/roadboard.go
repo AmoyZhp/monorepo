@@ -7,10 +7,6 @@ type RoadBoard struct {
 	liveThreeRoads map[Player][]Road
 }
 
-// Road road is continuous five position in specific direction
-type Road struct {
-}
-
 // NewRoadBoard new road board
 func NewRoadBoard() RoadBoard {
 
@@ -36,10 +32,6 @@ func newLiveThreeRoads(map[Player][][]Road) map[Player][]Road {
 	panic("unimplement")
 }
 
-func (imp *Road) getEmptyPos() []Move {
-	panic("unimplement")
-}
-
 // Set update board when board updated
 func (imp *RoadBoard) Set(move Move) error {
 	panic("unimplement")
@@ -54,7 +46,11 @@ func (imp *RoadBoard) Regret(step int) error {
 func (imp *RoadBoard) GetPosInLiveThree(player Player) []Move {
 	moves := make([]Move, 0)
 	for _, r := range imp.liveThreeRoads[player] {
-		moves = append(moves, r.getEmptyPos()...)
+		poses := r.getEmptyPos()
+		for _, p := range poses {
+			moves = append(moves, Move{Row: p.Row, Col: p.Col, Player: player})
+		}
+
 	}
 	return moves
 }
@@ -82,7 +78,19 @@ func (imp *RoadBoard) GetPosInOne(player Player) []Move {
 func (imp *RoadBoard) getPos(player Player, roadNum int) []Move {
 	moves := make([]Move, 0)
 	for _, r := range imp.roads[player][roadNum] {
-		moves = append(moves, r.getEmptyPos()...)
+		poses := r.getEmptyPos()
+		for _, p := range poses {
+			moves = append(moves, Move{Row: p.Row, Col: p.Col, Player: player})
+		}
+
 	}
 	return moves
+}
+
+// Road road is continuous five position in specific direction
+type Road struct {
+}
+
+func (imp *Road) getEmptyPos() []Pos {
+	panic("unimplement")
 }
