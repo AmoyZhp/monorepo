@@ -1,10 +1,13 @@
 package executor
 
+// RoadsLayer roads layer
+type RoadsLayer map[Player][][]*Road
+
 // RoadBoard board to store roads
 type RoadBoard struct {
-	roadsPool      [][]Road
-	roads          map[Player][][]Road
-	liveThreeRoads map[Player][]Road
+	roadsPool      [][]*Road
+	roads          RoadsLayer
+	liveThreeRoads map[Player][]*Road
 }
 
 // NewRoadBoard new road board
@@ -20,21 +23,39 @@ func NewRoadBoard() RoadBoard {
 	}
 }
 
-func newRoadsPool() [][]Road {
+func newRoadsPool() [][]*Road {
 	panic("unimplement")
 }
 
-func newRoads(roadsPool [][]Road) map[Player][][]Road {
+func newRoads(roadsPool [][]*Road) map[Player][][]*Road {
 	panic("unimplement")
 }
 
-func newLiveThreeRoads(map[Player][][]Road) map[Player][]Road {
+func newLiveThreeRoads(map[Player][][]*Road) map[Player][]*Road {
 	panic("unimplement")
 }
 
 // Set update board when board updated
 func (imp *RoadBoard) Set(move Move) error {
-	panic("unimplement")
+	beginRow := move.Row
+	beginCol := move.Col
+	for i := 0; i < 5; i++ {
+		row := beginRow - northToSouth.Row()*i
+		col := beginCol - northToSouth.Col()*i
+		road := imp.roadsPool[row][col]
+		imp.removeRoad(imp.roads, road)
+		road.Update(row, col, move.Player)
+		imp.addRoad(imp.roads, road)
+	}
+	return nil
+}
+
+func (imp *RoadBoard) removeRoad(roadsLayer RoadsLayer, road *Road) {
+
+}
+
+func (imp *RoadBoard) addRoad(roadsLayer RoadsLayer, road *Road) {
+
 }
 
 // Regret move back n step
@@ -93,4 +114,9 @@ type Road struct {
 
 func (imp *Road) getEmptyPos() []Pos {
 	panic("unimplement")
+}
+
+// Update update road
+func (imp *Road) Update(row, col int, player Player) {
+
 }
