@@ -1,5 +1,7 @@
 package executor
 
+import "fmt"
+
 // RoadsBucket roads layer
 type RoadsBucket map[Player][][]*Road
 
@@ -122,37 +124,70 @@ func (imp *RoadBoard) getPos(player Player, roadNum int) []Move {
 
 // Road road is continuous five position in specific direction
 type Road struct {
+	belong     Player
+	posArr     []*Move
+	unEmptyCnt int
+	index      int
 }
 
 func (imp *Road) getEmptyPos() []Pos {
-	panic("unimplement")
+	pos := make([]Pos, 0)
+	for _, p := range imp.posArr {
+		if p.Player == EMPTY {
+			pos = append(pos, Pos{Row: p.Row, Col: p.Col})
+		}
+	}
+	return pos
 }
 
 // Update update road
 func (imp *Road) Update(row, col int, player Player) {
-
+	for _, p := range imp.posArr {
+		if p.Row == row && p.Col == col {
+			if p.Player != EMPTY {
+				// TODO should occur error
+				fmt.Println("road position has taken")
+				return
+			}
+			p.Player = player
+			return
+		}
+	}
+	fmt.Println("pass wrong position to road update")
 }
 
+// BelongTo player road belong to
 func (imp *Road) BelongTo() Player {
-	panic("unimplement")
+	return imp.belong
 }
 
+// CountPieces count player pieces
 func (imp *Road) CountPieces(player Player) int {
-	panic("unimplement")
+	cnt := 0
+	for _, p := range imp.posArr {
+		if p.Player == player {
+			cnt++
+		}
+	}
+	return cnt
 }
 
+// CountBelongPieces count pieces of road belong to
 func (imp *Road) CountBelongPieces() int {
 	return imp.CountPieces(imp.BelongTo())
 }
 
+// CountAll count unempty position
 func (imp *Road) CountAll() int {
-	panic("unimplement")
+	return imp.unEmptyCnt
 }
 
+// Index return index in roads bucket
 func (imp *Road) Index() int {
-	panic("unimplement")
+	return imp.index
 }
 
-func (imp *Road) SetIndex(int) {
-	panic("unimplement")
+// SetIndex set index come from roads bucket
+func (imp *Road) SetIndex(index int) {
+	imp.index = index
 }
