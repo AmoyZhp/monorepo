@@ -53,6 +53,15 @@ func newLiveThreeRoads(RoadsBucket) map[Player][]*Road {
 
 // Set update board when board updated
 func (imp *RoadBoard) Set(move Move) error {
+	return imp.update(move)
+}
+
+// Regret move back step
+func (imp *RoadBoard) Regret(move Move) error {
+	return imp.update(move)
+}
+
+func (imp *RoadBoard) update(move Move) error {
 	beginRow := move.Row
 	beginCol := move.Col
 	for i := 0; i < 5; i++ {
@@ -64,11 +73,6 @@ func (imp *RoadBoard) Set(move Move) error {
 		imp.roadsBucket.AddRoad(road)
 	}
 	return nil
-}
-
-// Regret move back n step
-func (imp *RoadBoard) Regret(step int) error {
-	panic("unimplement")
 }
 
 // GetPosInLiveThree get live three position in three road
