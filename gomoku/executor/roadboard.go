@@ -1,12 +1,28 @@
 package executor
 
-// RoadsLayer roads layer
-type RoadsLayer map[Player][][]*Road
+// RoadsBucket roads layer
+type RoadsBucket map[Player][][]*Road
+
+// RemoveRoad remove road. this will disrupt the order of the slice
+func (imp RoadsBucket) RemoveRoad(road *Road) {
+	roadsPointer := imp[road.BelongTo()][road.CountBelongPieces()]
+	lastRoad := roadsPointer[len(roadsPointer)]
+	lastRoad.SetIndex(road.Index())
+	roadsPointer[road.Index()] = lastRoad
+	imp[road.BelongTo()][road.CountBelongPieces()] = roadsPointer[:len(roadsPointer)-1]
+}
+
+// AddRoad add road to the end
+func (imp RoadsBucket) AddRoad(road *Road) {
+	temp := imp[road.BelongTo()][road.CountBelongPieces()]
+	road.SetIndex(len(temp))
+	imp[road.BelongTo()][road.CountBelongPieces()] = append(temp, road)
+}
 
 // RoadBoard board to store roads
 type RoadBoard struct {
 	roadsPool      [][]*Road
-	roads          RoadsLayer
+	roadsBucket    RoadsBucket
 	liveThreeRoads map[Player][]*Road
 }
 
@@ -18,7 +34,7 @@ func NewRoadBoard() RoadBoard {
 	liveThreeRoads := newLiveThreeRoads(roads)
 	return RoadBoard{
 		roadsPool:      roadsPool,
-		roads:          roads,
+		roadsBucket:    roads,
 		liveThreeRoads: liveThreeRoads,
 	}
 }
@@ -27,11 +43,11 @@ func newRoadsPool() [][]*Road {
 	panic("unimplement")
 }
 
-func newRoads(roadsPool [][]*Road) map[Player][][]*Road {
+func newRoads(roadsPool [][]*Road) RoadsBucket {
 	panic("unimplement")
 }
 
-func newLiveThreeRoads(map[Player][][]*Road) map[Player][]*Road {
+func newLiveThreeRoads(RoadsBucket) map[Player][]*Road {
 	panic("unimplement")
 }
 
@@ -43,19 +59,11 @@ func (imp *RoadBoard) Set(move Move) error {
 		row := beginRow - northToSouth.Row()*i
 		col := beginCol - northToSouth.Col()*i
 		road := imp.roadsPool[row][col]
-		imp.removeRoad(imp.roads, road)
+		imp.roadsBucket.RemoveRoad(road)
 		road.Update(row, col, move.Player)
-		imp.addRoad(imp.roads, road)
+		imp.roadsBucket.AddRoad(road)
 	}
 	return nil
-}
-
-func (imp *RoadBoard) removeRoad(roadsLayer RoadsLayer, road *Road) {
-
-}
-
-func (imp *RoadBoard) addRoad(roadsLayer RoadsLayer, road *Road) {
-
 }
 
 // Regret move back n step
@@ -98,7 +106,7 @@ func (imp *RoadBoard) GetPosInOne(player Player) []Move {
 
 func (imp *RoadBoard) getPos(player Player, roadNum int) []Move {
 	moves := make([]Move, 0)
-	for _, r := range imp.roads[player][roadNum] {
+	for _, r := range imp.roadsBucket[player][roadNum] {
 		poses := r.getEmptyPos()
 		for _, p := range poses {
 			moves = append(moves, Move{Row: p.Row, Col: p.Col, Player: player})
@@ -119,4 +127,28 @@ func (imp *Road) getEmptyPos() []Pos {
 // Update update road
 func (imp *Road) Update(row, col int, player Player) {
 
+}
+
+func (imp *Road) BelongTo() Player {
+	panic("unimplement")
+}
+
+func (imp *Road) CountPieces(player Player) int {
+	panic("unimplement")
+}
+
+func (imp *Road) CountBelongPieces() int {
+	return imp.CountPieces(imp.BelongTo())
+}
+
+func (imp *Road) CountAll() int {
+	panic("unimplement")
+}
+
+func (imp *Road) Index() int {
+	panic("unimplement")
+}
+
+func (imp *Road) SetIndex(int) {
+	panic("unimplement")
 }
