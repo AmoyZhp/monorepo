@@ -23,7 +23,7 @@ func (imp RoadBucket) AddRoad(road *Road) {
 
 // RoadBoard board to store roads
 type RoadBoard struct {
-	roadsPool   [][]*Road
+	roadsPool   [][][]*Road
 	roadsBucket RoadBucket
 }
 
@@ -37,11 +37,11 @@ func NewRoadBoard() RoadBoard {
 	}
 }
 
-func newRoadPool() [][]*Road {
+func newRoadPool() [][][]*Road {
 	panic("unimplement")
 }
 
-func newRoadBucket(roadsPool [][]*Road) RoadBucket {
+func newRoadBucket(roadsPool [][][]*Road) RoadBucket {
 	panic("unimplement")
 }
 
@@ -58,13 +58,15 @@ func (imp *RoadBoard) Regret(move Move) error {
 func (imp *RoadBoard) update(move Move) error {
 	beginRow := move.Row
 	beginCol := move.Col
-	for i := 0; i < 5; i++ {
-		row := beginRow - northToSouth.Row()*i
-		col := beginCol - northToSouth.Col()*i
-		road := imp.roadsPool[row][col]
-		imp.roadsBucket.RemoveRoad(road)
-		road.Update(row, col, move.Player)
-		imp.roadsBucket.AddRoad(road)
+	for _, dire := range directions {
+		for i := 0; i < 5; i++ {
+			row := beginRow - dire.Row()*i
+			col := beginCol - dire.Col()*i
+			road := imp.roadsPool[row][col][dire.Enum()]
+			imp.roadsBucket.RemoveRoad(road)
+			road.Update(row, col, move.Player)
+			imp.roadsBucket.AddRoad(road)
+		}
 	}
 	return nil
 }

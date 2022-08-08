@@ -44,11 +44,16 @@ func (imp direction) Col() int {
 	return imp[1]
 }
 
+func (imp direction) Enum() int {
+	return imp[2]
+}
+
+// {row, col, enum value}
 var (
-	northToSouth         = direction{1, 0}
-	westToEast           = direction{0, 1}
-	northWestToSouthEast = direction{1, 1}
-	northEastToSouthWest = direction{1, -1}
+	northToSouth         = direction{1, 0, 0}
+	westToEast           = direction{0, 1, 1}
+	northWestToSouthEast = direction{1, 1, 2}
+	northEastToSouthWest = direction{1, -1, 3}
 )
 
 var directions = []direction{
