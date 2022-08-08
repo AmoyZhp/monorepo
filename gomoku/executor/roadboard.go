@@ -2,7 +2,7 @@ package executor
 
 import "fmt"
 
-// RoadBucket roads layer
+// RoadBucket roads layer, player, road num, road
 type RoadBucket map[Player][][]*Road
 
 // RemoveRoad remove road. this will disrupt the order of the slice
@@ -38,11 +38,47 @@ func NewRoadBoard() RoadBoard {
 }
 
 func newRoadPool() [][][]*Road {
+	roadPool := make([][][]*Road, GomokuRow)
+	for i := 0; i < GomokuRow; i++ {
+		roadPool[i] = make([][]*Road, GomokuCol)
+		for j := 0; j < GomokuCol; j++ {
+			roadPool[i][j] = make([]*Road, 4)
+			for _, dire := range directions {
+				roadPool[i][j][dire.Enum()] = newRoad(i, j, dire)
+			}
+		}
+	}
+	return roadPool
+}
+
+func newRoad(row, col int, dire direction) *Road {
 	panic("unimplement")
 }
 
-func newRoadBucket(roadsPool [][][]*Road) RoadBucket {
-	panic("unimplement")
+func newRoadBucket(roadPool [][][]*Road) RoadBucket {
+	var roadBucket RoadBucket
+	roadBucket[EMPTY] = make([][]*Road, 5)
+	roadBucket[BLACK] = make([][]*Road, 5)
+	roadBucket[WHITE] = make([][]*Road, 5)
+	roadBucket[NOMAN] = make([][]*Road, 5)
+	for i := 0; i < 5; i++ {
+		roadBucket[EMPTY][i] = make([]*Road, 0)
+		roadBucket[BLACK][i] = make([]*Road, 0)
+		roadBucket[WHITE][i] = make([]*Road, 0)
+		roadBucket[NOMAN][i] = make([]*Road, 0)
+	}
+	for i := 0; i < GomokuRow; i++ {
+		for j := 0; j < GomokuCol; j++ {
+			for _, dire := range directions {
+				road := roadPool[i][j][dire.Enum()]
+				roadBucket[road.BelongTo()][road.CountBelongPieces()] = append(
+					roadBucket[road.BelongTo()][road.CountBelongPieces()],
+					road,
+				)
+			}
+		}
+	}
+	return roadBucket
 }
 
 // Set update board when board updated
@@ -116,6 +152,7 @@ type Road struct {
 	posArr     []*Move
 	unEmptyCnt int
 	index      int
+	playerCnt  map[Player]int
 }
 
 func (imp *Road) getEmptyPos() []Pos {
@@ -138,10 +175,24 @@ func (imp *Road) Update(row, col int, player Player) {
 				return
 			}
 			p.Player = player
+			imp.playerCnt[player]++
+			imp.updateBelong()
 			return
 		}
 	}
 	fmt.Println("pass wrong position to road update")
+}
+
+func (imp *Road) updateBelong() {
+	maxCnt := -1
+	belong := EMPTY
+	for player, cnt := range imp.playerCnt {
+		if cnt > maxCnt {
+			belong = player
+			maxCnt = cnt
+		}
+	}
+	imp.belong = belong
 }
 
 // BelongTo player road belong to

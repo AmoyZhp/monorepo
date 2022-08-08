@@ -5,10 +5,10 @@ type Player int
 
 // player num
 const (
-	EMPTY  Player = 0
-	BLACK  Player = 1
-	WHITE  Player = 2
-	UNKOWN Player = -1
+	EMPTY Player = 0
+	BLACK Player = 1
+	WHITE Player = 2
+	NOMAN Player = 100
 )
 
 func nextPlayer(player Player) Player {
