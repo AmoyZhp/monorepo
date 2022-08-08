@@ -2,11 +2,11 @@ package executor
 
 import "fmt"
 
-// RoadsBucket roads layer
-type RoadsBucket map[Player][][]*Road
+// RoadBucket roads layer
+type RoadBucket map[Player][][]*Road
 
 // RemoveRoad remove road. this will disrupt the order of the slice
-func (imp RoadsBucket) RemoveRoad(road *Road) {
+func (imp RoadBucket) RemoveRoad(road *Road) {
 	roadsPointer := imp[road.BelongTo()][road.CountBelongPieces()]
 	lastRoad := roadsPointer[len(roadsPointer)]
 	lastRoad.SetIndex(road.Index())
@@ -15,7 +15,7 @@ func (imp RoadsBucket) RemoveRoad(road *Road) {
 }
 
 // AddRoad add road to the end
-func (imp RoadsBucket) AddRoad(road *Road) {
+func (imp RoadBucket) AddRoad(road *Road) {
 	temp := imp[road.BelongTo()][road.CountBelongPieces()]
 	road.SetIndex(len(temp))
 	imp[road.BelongTo()][road.CountBelongPieces()] = append(temp, road)
@@ -23,33 +23,25 @@ func (imp RoadsBucket) AddRoad(road *Road) {
 
 // RoadBoard board to store roads
 type RoadBoard struct {
-	roadsPool      [][]*Road
-	roadsBucket    RoadsBucket
-	liveThreeRoads map[Player][]*Road
+	roadsPool   [][]*Road
+	roadsBucket RoadBucket
 }
 
 // NewRoadBoard new road board
 func NewRoadBoard() RoadBoard {
-
-	roadsPool := newRoadsPool()
-	roads := newRoads(roadsPool)
-	liveThreeRoads := newLiveThreeRoads(roads)
+	roadPool := newRoadPool()
+	roadBucket := newRoadBucket(roadPool)
 	return RoadBoard{
-		roadsPool:      roadsPool,
-		roadsBucket:    roads,
-		liveThreeRoads: liveThreeRoads,
+		roadsPool:   roadPool,
+		roadsBucket: roadBucket,
 	}
 }
 
-func newRoadsPool() [][]*Road {
+func newRoadPool() [][]*Road {
 	panic("unimplement")
 }
 
-func newRoads(roadsPool [][]*Road) RoadsBucket {
-	panic("unimplement")
-}
-
-func newLiveThreeRoads(RoadsBucket) map[Player][]*Road {
+func newRoadBucket(roadsPool [][]*Road) RoadBucket {
 	panic("unimplement")
 }
 
@@ -80,13 +72,7 @@ func (imp *RoadBoard) update(move Move) error {
 // GetPosInLiveThree get live three position in three road
 func (imp *RoadBoard) GetPosInLiveThree(player Player) []Move {
 	moves := make([]Move, 0)
-	for _, r := range imp.liveThreeRoads[player] {
-		poses := r.getEmptyPos()
-		for _, p := range poses {
-			moves = append(moves, Move{Row: p.Row, Col: p.Col, Player: player})
-		}
-
-	}
+	// TODO implement got pos in live three
 	return moves
 }
 
