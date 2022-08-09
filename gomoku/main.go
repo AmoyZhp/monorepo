@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 
 // Handler http handler
 type Handler struct {
-	executor executor.Executor
+	executor executor.Engine
 }
 
 func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +26,8 @@ func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
 		log.Println("json unmarshal error: ", err.Error())
 		return
 	}
-	retMove := imp.executor.GetNextMove(move)
+	retMove, err := imp.executor.Predict(move)
+	fmt.Println("predcit return error : ", err.Error())
 	retByte, _ := json.Marshal(retMove)
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Content-Type", "application/json")
@@ -33,7 +35,7 @@ func (imp *Handler) handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	handler := Handler{executor: executor.NewGomokuExectuor()}
+	handler := Handler{executor: executor.NewEngine()}
 	http.HandleFunc("/get-move", handler.handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -11,9 +11,9 @@ type Engine interface {
 	Predict(Move) (*Move, error)
 }
 
-// Evaluator to evaluate a game status
-type Evaluator interface {
-	Evaluate(Board) int
+// NewEngine init engine
+func NewEngine() Engine {
+	return &TreeSearchEngine{}
 }
 
 // TreeSearchEngineConfig engine config
@@ -24,9 +24,8 @@ type TreeSearchEngineConfig struct {
 
 // TreeSearchEngine implement tree serch engine
 type TreeSearchEngine struct {
-	board     Board
-	evaluator Evaluator
-	conf      TreeSearchEngineConfig
+	board Board
+	conf  TreeSearchEngineConfig
 }
 
 // Predict get next move
@@ -139,8 +138,4 @@ func (imp *TreeSearchEngine) getCandidatesMoves(board Board, actingPlayer Player
 	}
 	moves = board.GetOpenForm(actingPlayer)
 	return moves
-}
-
-func newEngine() Engine {
-	return &TreeSearchEngine{}
 }

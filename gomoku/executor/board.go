@@ -10,22 +10,6 @@ type Pos struct {
 	Col int
 }
 
-// Board chessboard
-type Board interface {
-	Set(Move) error
-	GetPlayerAtPos(x, y int) (Player, error)
-	Regret(step int) error
-	Reset() error
-	IsEnd() bool
-	Eval() int
-	GetPosInFour(Player) []Move
-	GetPosInLiveThree(Player) []Move
-	GetPosInThree(Player) []Move
-	GetPosInTwo(Player) []Move
-	GetPosInOne(Player) []Move
-	GetOpenForm(Player) []Move
-}
-
 // Gomoku related attribute
 const (
 	GomokuCol = 15
@@ -61,6 +45,22 @@ var directions = []direction{
 	westToEast,
 	northWestToSouthEast,
 	northEastToSouthWest,
+}
+
+// Board chessboard
+type Board interface {
+	Set(Move) error
+	GetPlayerAtPos(x, y int) (Player, error)
+	Regret(step int) error
+	Reset() error
+	IsEnd() bool
+	Eval() int
+	GetPosInFour(Player) []Move
+	GetPosInLiveThree(Player) []Move
+	GetPosInThree(Player) []Move
+	GetPosInTwo(Player) []Move
+	GetPosInOne(Player) []Move
+	GetOpenForm(Player) []Move
 }
 
 // NewGomokuBoard new gomoku chess board
